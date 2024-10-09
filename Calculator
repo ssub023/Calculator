@@ -1,0 +1,67 @@
+package mid_test;
+
+/**
+ * 계산기 만들기
+ * 
+ * @started 2024.10.09.
+ * 
+ * <ul>
+ *   <li>2024.10.09.: 텍스트 영역 생성과 버튼 생성</li>
+ * </ul>
+ */
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Calculator extends JFrame {
+	
+    Calculator() {
+        setTitle("계산기");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(300, 370);
+
+        showNorth();
+        showCenter();
+
+        setVisible(true); // 프레임을 보이게 함
+    }
+
+ 	void showNorth() {
+    	JTextArea  area = new JTextArea(4, 23); // 텍스트 영역 크기
+        area.setEditable(false); // 편집 불가
+        add(area, BorderLayout.NORTH);
+    }
+
+ 	void showCenter() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(4, 4, 10, 10));
+
+        String[] buttons = {
+            "7", "8", "9", "/",
+            "4", "5", "6", "*",
+            "1", "2", "3", "-",
+            "C", "0", "=", "+"
+        };
+
+        for (String text : buttons) {
+            JButton button = new JButton(text);
+            button.addActionListener(new ButtonClickListener()); // 클릭 이벤트 추가
+            panel.add(button);
+        }
+
+        add(panel, BorderLayout.CENTER);
+    }
+
+    private class ButtonClickListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
+
+        }
+    }
+
+    public static void main(String[] args) {
+        new Calculator();
+    }
+}
