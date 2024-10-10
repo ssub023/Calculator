@@ -1,5 +1,14 @@
 package mid_test;
-
+/**
+ * 계산기 만들기
+ * 
+ * @started 2024.10.09.
+ * 
+ * <ul>
+ *   <li>2024.10.09.: 텍스트 영역 생성과 버튼 생성</li>
+ *   <li>2024.10.10.: 버튼 클릭 시 텍스트 영역에 생성</li>
+ * </ul>
+ */
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
@@ -58,7 +67,7 @@ public class Calculator extends JFrame {
             }
             // =가 눌렸을 때
             else if(command.equals("=")) {
-            	String result = calculate(area.getText()); // 메소드 호출  ---> 수정
+            	String result = calculate(area.getText()); // 메소드 호출  
             	area.setText(result);	
             }
             // 이외 버튼 눌렸을때
