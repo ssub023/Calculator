@@ -7,15 +7,26 @@ package mid_test;
  * 
  * <ul>
  *   <li>2024.10.09.: 텍스트 영역 생성과 버튼 생성</li>
+ *   <li>2024.10.10.: 버튼 클릭 시 텍스트 영역에 생성</li>
+ *   <li>2024.10.12.: </li>
  * </ul>
  */
 
+package mid_test;
+
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class Calculator extends JFrame {
+	
+	JTextArea area; // 변수 선언
+	String num="";
+	ArrayList<String> tokens = new ArrayList<String>();
 	
     Calculator() {
         setTitle("계산기");
@@ -29,7 +40,7 @@ public class Calculator extends JFrame {
     }
 
  	void showNorth() {
-    	JTextArea  area = new JTextArea(4, 23); // 텍스트 영역 크기
+    	area = new JTextArea(4, 23); // 텍스트 영역 크기
         area.setEditable(false); // 편집 불가
         add(area, BorderLayout.NORTH);
     }
@@ -45,6 +56,7 @@ public class Calculator extends JFrame {
             "C", "0", "=", "+"
         };
 
+
         for (String text : buttons) {
             JButton button = new JButton(text);
             button.addActionListener(new ButtonClickListener()); // 클릭 이벤트 추가
@@ -57,8 +69,48 @@ public class Calculator extends JFrame {
     private class ButtonClickListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
+            
+            // C가 눌렸을 때  
+            if(command.equals("C")) {
+				area.setText("");
+            }
+            // =가 눌렸을 때
+            else if(command.equals("=")) {
+            	String result = Double.toString(calcualate(area.getText()));// 메소드 호출  
+            	area.setText(result);	
+            	num="";
+            }
+            // 이외 버튼 눌렸을때
+            else {
+            	area.setText(area.getText()+e.getActionCommand()); // 클릭한 버튼 추가
+            }
+            
 
         }
+        
+
+
+		private double calcualate(String text) {
+			fullTextParsing(text);
+			
+			double prev = 0; //이전 숫자 저장
+			double current= 0; // 현재 숫자 저장
+			String mode = ""; // 현재 연산자 저장(+, -, /, *)
+			
+			for (int i =1; i < tokens.size(); i++) {
+				String token = tokens.get(i);
+				
+			}
+			
+			return prev;
+		}
+		
+		private void fullTextParsing(String text) {
+			// TODO Auto-generated method stub
+			
+		}
+
+
     }
 
     public static void main(String[] args) {
