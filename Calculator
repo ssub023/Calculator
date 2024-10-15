@@ -1,4 +1,3 @@
-package mid_test;
 
 /**
  * 계산기 만들기
@@ -8,27 +7,24 @@ package mid_test;
  * <ul>
  *   <li>2024.10.09.: 텍스트 영역 생성과 버튼 생성</li>
  *   <li>2024.10.10.: 버튼 클릭 시 텍스트 영역에 생성</li>
- *   <li>2024.10.12.: </li>
- *   <li>2024.10.15.: </li>
+ *   <li>2024.10.12.: 수식 계산하는 메소드</li>
+ *   <li>2024.10.15.: 수식 계산하는 메소드2</li>
  * </ul>
  */
 
 package mid_test;
 
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class Calculator extends JFrame {
-	
-	JTextArea area; // 변수 선언
-	String num="";
-	ArrayList<String> tokens = new ArrayList<String>();
-	
+    
+    JTextArea area; // 변수 선언
+    ArrayList<String> tokens = new ArrayList<String>();
+
     Calculator() {
         setTitle("계산기");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,13 +36,13 @@ public class Calculator extends JFrame {
         setVisible(true); // 프레임을 보이게 함
     }
 
- 	void showNorth() {
-    	area = new JTextArea(4, 23); // 텍스트 영역 크기
+    void showNorth() {
+        area = new JTextArea(4, 23); // 텍스트 영역 크기
         area.setEditable(false); // 편집 불가
         add(area, BorderLayout.NORTH);
     }
 
- 	void showCenter() {
+    void showCenter() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 4, 10, 10));
 
@@ -54,9 +50,8 @@ public class Calculator extends JFrame {
             "7", "8", "9", "/",
             "4", "5", "6", "*",
             "1", "2", "3", "-",
-            "C", "0", "=", "+"
+            "0", "C", "=", "+"
         };
-
 
         for (String text : buttons) {
             JButton button = new JButton(text);
@@ -69,49 +64,82 @@ public class Calculator extends JFrame {
 
     private class ButtonClickListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            String command = e.getActionCommand();
+            String command = e.getActionCommand(); // 어떤 버튼 눌렸는지
             
             // C가 눌렸을 때  
-            if(command.equals("C")) {
-				area.setText("");
+            if (command.equals("C")) {
+                area.setText("");
+                tokens.clear();
             }
             // =가 눌렸을 때
-            else if(command.equals("=")) {
-            	String result = Double.toString(calcualate(area.getText()));// 메소드 호출  
-            	area.setText(result);	
-            	num="";
+            else if (command.equals("=")) {
+                String result = Double.toString(calculate(area.getText())); // 메소드 호출  
+                area.setText(result);    
+                tokens.clear();
             }
-            // 이외 버튼 눌렸을때
+            // 이외 버튼 눌렸을 때
             else {
-            	area.setText(area.getText()+e.getActionCommand()); // 클릭한 버튼 추가
+                area.setText(area.getText() + command); // 클릭한 버튼 추가
             }
-            
+        }
+
+        private double calculate(String text) { // 수식 계산하는 메소드
+            tokens.clear();
+            fullTextParsing(text); // 수식 파싱 메소드 호출
+
+            double prev = 0; // 이전 숫자 저장
+            double current = 0; // 현재 숫자 저장
+            String mode = ""; // 현재 연산자 저장 (+, -, *, /)
+
+            for (String t : tokens) {
+                if (t.equals("+")) {
+                    mode = "add";
+                } else if (t.equals("-")) {
+                    mode = "sub";
+                } else if (t.equals("*")) {
+                    mode = "mul";
+                } else if (t.equals("/")) {
+                    mode = "div";
+                } else {
+                    current = Double.parseDouble(t);
+                    if (mode.equals("add")) {
+                        prev += current;
+                    } else if (mode.equals("sub")) {
+                        prev -= current;
+                    } else if (mode.equals("mul")) {
+                        prev *= current;
+                    } else if (mode.equals("div")) {
+                        prev /= current;
+                    } else {
+                        prev = current; // 첫 번째 숫자
+                    }
+                }
+            }
+            return prev;
+        }
+
+        private void fullTextParsing(String text) { // 입력된 텍스트를 파싱하는 메소드
+            tokens.clear();
+            String num = ""; // 숫자를 저장할 변수
+
+            for (int i = 0; i < text.length(); i++) {
+                char ch = text.charAt(i);
+                
+                // 연산기호가 나오면 ArrayList에 추가하고 초기화
+                if (ch == '-' || ch == '+' || ch == '*' || ch == '/') {
+                    if (!num.isEmpty()) { // 이전 숫자가 비어있지 않으면 추가
+                        tokens.add(num);
+                    }
+                    num = ""; // 숫자 초기화
+                    tokens.add(Character.toString(ch)); // 연산기호 추가
+                } 
+                else {
+                    // 나머지는 숫자 처리
+                    num += ch;
+                }
+            }
 
         }
-        
-
-
-		private double calcualate(String text) {
-			fullTextParsing(text);
-			
-			double prev = 0; //이전 숫자 저장
-			double current= 0; // 현재 숫자 저장
-			String mode = ""; // 현재 연산자 저장(+, -, /, *)
-			
-			for (int i =1; i < tokens.size(); i++) {
-				String token = tokens.get(i);
-				
-			}
-			
-			return prev;
-		}
-		
-		private void fullTextParsing(String text) {
-			// TODO Auto-generated method stub
-			
-		}
-
-
     }
 
     public static void main(String[] args) {
