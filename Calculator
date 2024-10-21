@@ -1,4 +1,3 @@
-
 /**
  * title: 사칙연산 계산기 만들기
  * 
@@ -12,6 +11,8 @@
  *   <li>2024.10.15: 수식 계산하는 메소드2  --> 오류</li>
  *   <li>2024.10.17: 버튼 수정 및 중위,후위 표현식 메소드 추가</li>
  *   <li>2024.10.19: fullTextParsing 메소드 작성</li>
+ *   <li>2024.10.20: </li>
+ *   <li>2024.10.21: ~표현식 메소드 작성 --> 계산 오류</li>
  * </ul>
  */
 
@@ -20,6 +21,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class Calculator extends JFrame {
     
@@ -29,7 +31,8 @@ public class Calculator extends JFrame {
     Calculator() {
         setTitle("계산기");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 370); //프레임 크기 
+        setSize(350, 370); //프레임 크기 
+        setLayout(new BorderLayout(5,5));
 
         showNorth();
         showCenter();
@@ -86,6 +89,7 @@ public class Calculator extends JFrame {
                 if (!currentText.isEmpty()) {
                     double currentValue = Double.parseDouble(currentText);
                     area.setText(Double.toString(currentValue / 100)); // 현재 숫자의 1%를 계산
+                    tokens.clear();
                 }
             }
             // =가 눌렸을 때
@@ -134,20 +138,81 @@ public class Calculator extends JFrame {
             }
 		}
 
-		private boolean isOperator(String valueOf) { // 문자열이 연산자인지 확인하는 메소드
+		private boolean isOperator(String token) { // 문자열이 연산자인지 확인하는 메소드
 			return tokens.equals("+") || tokens.equals("-") || tokens.equals("*") || tokens.equals("/");
 		}
 		
-        private ArrayList<String> infixToPostfix(ArrayList<String> tokens) { //중위표현식
-			// TODO Auto-generated method stub
-			return null;
-		}
+		/**  @chatgtp: 중위 표현식을 후위 표현식으로 변환하는 메소드
+		         --> private ArrayList<String> infixToPostfix(ArrayList<String> tokens) {...}   */
         
-        private double evaluatePostfix(ArrayList<String> postfix) { //후위 표현식
-            
-            return 0;
+		private ArrayList<String> infixToPostfix(ArrayList<String> tokens) { //중위표현식->후위표현식
+			ArrayList<String> output = new ArrayList<>(); // 후위표현식을 저장할 리스트
+			Stack<String> stack = new Stack<>(); //연산자를 저장할 스택
+			
+			 for (String token : tokens) {
+	                if (isOperator(token)) {
+	                    while (!stack.isEmpty() && precedence(stack.peek()) >= precedence(token)) {
+	                        output.add(stack.pop()); // 우선순위가 높은 연산자 처리
+	                    }
+	                    stack.push(token); // 현재 연산자 추가
+	                } else {
+	                    output.add(token); // 숫자는 바로 추가
+	                }
+	            }
+
+	            // 스택에 남아있는 연산자 추가
+	            while (!stack.isEmpty()) {
+	                output.add(stack.pop());
+	            }
+
+	            return output; // 후위 표현식 반환
+	        }
+        
+        private int precedence(String operator) { // 우선순위를 반환하는 메소드
+        	switch (operator) {
+            case "+":
+            case "-":
+                return 1; // 덧셈 및 뺄셈의 우선순위
+            case "*":
+            case "/":
+                return 2; // 곱셈 및 나눗셈의 우선순위
+            default:
+                return 0;
+                }
+		}
+
+        private double evaluatePostfix(ArrayList<String> postfix) {
+            Stack<Double> stack = new Stack<>(); // 숫자를 저장할 스택
+
+            for (String token : postfix) {
+                if (isOperator(token)) {
+                    double b = stack.pop(); // 두 번째 숫자
+                    double a = stack.pop(); // 첫 번째 숫자
+                    double result = performOperation(a, b, token); // 연산 수행
+                    stack.push(result); // 결과를 스택에 추가
+                } else {
+                    stack.push(Double.parseDouble(token)); // 숫자는 스택에 추가
+                }
+            }
+
+            return stack.pop(); // 최종 결과 반환
+        }
+
+		private double performOperation(double a, double b, String operator) { // 숫자와 연산자을 입력 받아 수행
+			switch (operator) {
+            case "+":
+                return a + b; // 덧셈
+            case "-":
+                return a - b; // 뺄셈
+            case "*":
+                return a * b; // 곱셈
+            case "/":
+                return a / b; // 나눗셈
+            default:
+               return 0;
         }
     }
+}
 
     public static void main(String[] args) {
         new Calculator();
