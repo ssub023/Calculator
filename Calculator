@@ -13,6 +13,7 @@
  *   <li>2024.10.19: fullTextParsing 메소드 작성</li>
  *   <li>2024.10.20: </li>
  *   <li>2024.10.21: ~표현식 메소드 작성 --> 계산 오류</li>
+ *   <li>2024.10.22: 계산 오류 수정 --> % 오류</li>
  * </ul>
  */
 
@@ -55,11 +56,11 @@ public class Calculator extends JFrame {
             "7", "8", "9", "*",
             "4", "5", "6", "+",
             "1", "2", "3", "-",
-            " 0", "00", ".", "="
+            "0", "00", ".", "="
         };
 
-        for (String text : buttons) {
-            JButton button = new JButton(text);
+        for (int i = 0; i < buttons.length; i++) {
+            JButton button = new JButton(buttons[i]); // 버튼 생성
             button.addActionListener(new ButtonClickListener()); // 클릭 이벤트 추가
             panel.add(button);
         }
@@ -117,7 +118,8 @@ public class Calculator extends JFrame {
          */
 
 		private void fullTextParsing(String text) { // 수식 메소드
-            StringBuffer numberBuffer = new StringBuffer();//숫자버퍼
+			StringBuilder numberBuffer = new StringBuilder(); // 숫자버퍼
+
             
             for (char c : text.toCharArray()) {
             	if (Character.isDigit(c)|| c == '.') {  // Character 클래스 => 문자관련 메소드 / Character.isDigit => 문자가 숫자인지 확인(true/false)
@@ -139,7 +141,7 @@ public class Calculator extends JFrame {
 		}
 
 		private boolean isOperator(String token) { // 문자열이 연산자인지 확인하는 메소드
-			return tokens.equals("+") || tokens.equals("-") || tokens.equals("*") || tokens.equals("/");
+			return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/");
 		}
 		
 		/**  @chatgtp: 중위 표현식을 후위 표현식으로 변환하는 메소드
