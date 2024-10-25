@@ -1,3 +1,4 @@
+
 /**
  * title: 사칙연산 계산기 만들기
  * 
@@ -6,14 +7,15 @@
  * 
  * <ul>
  *   <li>2024.10.09: 텍스트 영역 생성과 버튼 생성</li>
- *   <li>2024.10.10: 버튼 클릭 시 텍스트 영역에 생성</li>
- *   <li>2024.10.12: 수식 계산하는 메소드</li>
- *   <li>2024.10.15: 수식 계산하는 메소드2  --> 오류</li>
- *   <li>2024.10.17: 버튼 수정 및 중위,후위 표현식 메소드 추가</li>
- *   <li>2024.10.19: fullTextParsing 메소드 작성</li>
- *   <li>2024.10.20: </li>
- *   <li>2024.10.21: ~표현식 메소드 작성 --> 계산 오류</li>
- *   <li>2024.10.22: 계산 오류 수정 --> % 오류</li>
+ *   <li>2024.10.10: 버튼 이벤트 처리</li>
+ *   <li>2024.10.12: 계산 메소드 작성</li>
+ *   <li>2024.10.15: 계산 메소드 수정 </li>
+ *   <li>2024.10.17: fullTextParsing 메소드 작성</li>
+ *   <li>2024.10.19: 중위 표현식을 후위 표현식으로 변환하는 메소드 작성 </li>
+ *   <li>2024.10.20: 후위 표현식 메소드 작성</li>
+ *   <li>2024.10.21: 연산 수행 메소드 작성</li>
+ *   <li>2024.10.22: 오류 수정</li>
+ *   <li>2024.10.25: 폰트 추가</li>
  * </ul>
  */
 
@@ -24,6 +26,20 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Stack;
 
+
+/**
+ *<li>2024.10.09: 텍스트 영역 생성 및 버튼 생성</li>
+ *  프레임 크기: 350x 370
+ *  텍스트 영역 생성 -> 편집 불가
+ *   
+ *  버튼 배열 --> 숫자, 연산자 버튼
+ *          --> 그리드레이아웃 5x4로 배치
+ *  버튼 생성 및 이벤트 추가
+ * 
+ *<li>2024.10.25: 폰트 추가</li>
+ * 텍스트 영역 폰트: 굵게, 크기: 25
+ * 버튼 폰트 : 굵게, 크기 20 + 색 추가
+ */  
 public class Calculator extends JFrame {
     
     JTextArea area; // 변수 선언
@@ -42,8 +58,10 @@ public class Calculator extends JFrame {
     }
 
     void showNorth() {
-        area = new JTextArea(4, 23); // 텍스트 영역 크기
+        area = new JTextArea(2,1); // 텍스트 영역 크기
         area.setEditable(false); // 편집 불가
+        
+        area.setFont(new Font("Arial", Font.BOLD, 25));
         add(area, BorderLayout.NORTH);
     }
 
@@ -52,21 +70,66 @@ public class Calculator extends JFrame {
         panel.setLayout(new GridLayout(5, 4, 10, 10));
 
         String[] buttons = {
-        	"C", " %", "/", "Back",
+        	"C", "%", "/", "Back",
             "7", "8", "9", "*",
             "4", "5", "6", "+",
             "1", "2", "3", "-",
             "0", "00", ".", "="
         };
+        
 
         for (int i = 0; i < buttons.length; i++) {
             JButton button = new JButton(buttons[i]); // 버튼 생성
             button.addActionListener(new ButtonClickListener()); // 클릭 이벤트 추가
+            
+            //C 버튼
+            if (buttons[i].equals("C")) {
+                button.setBackground(Color.RED); 
+                button.setForeground(Color.WHITE); 
+                button.setFont(new Font("Arial", Font.BOLD, 20)); 
+            } 
+            //연산자 버튼
+            else if (buttons[i].equals("/") || buttons[i].equals("*") || 
+                       buttons[i].equals("+") || buttons[i].equals("-")|| buttons[i].equals("%") ) {
+                button.setBackground(Color.DARK_GRAY); 
+                button.setForeground(Color.WHITE);
+                button.setFont(new Font("Arial", Font.BOLD, 20));
+            } 
+            // = 버튼
+            else if (buttons[i].equals("=")) {
+                button.setBackground(Color.GRAY); 
+                button.setForeground(Color.WHITE); 
+                button.setFont(new Font("Arial", Font.BOLD, 20));
+            }
+            //Back 버튼
+            else if (buttons[i].equals("Back")) {
+            	 button.setFont(new Font("Arial", Font.BOLD, 15));
+            }
+            //숫자 버튼
+            else {
+                button.setBackground(Color.WHITE); 
+                button.setForeground(Color.BLACK); 
+                button.setFont(new Font("Arial", Font.BOLD, 20)); 
+            }
+            
+
+            
+  
             panel.add(button);
         }
 
         add(panel, BorderLayout.CENTER);
     }
+    
+    /**
+     *<li>2024.10.10: 버튼 이벤트 처리</li>
+     *  C: 입력 영역 초기화.
+     *  Back: 마지막 문자 삭제.
+     *  % : 현재 숫자의 1% 계산.
+     *  = : 수식 계산 후 결과 표시.
+     *  기타 버튼: 클릭한 버튼의 텍스트를 입력 영역에 추가.
+     *  
+     */  
 
     private class ButtonClickListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -88,9 +151,8 @@ public class Calculator extends JFrame {
             else if (command.equals("%")){
             	String currentText = area.getText();
                 if (!currentText.isEmpty()) {
-                    double currentValue = Double.parseDouble(currentText);
-                    area.setText(Double.toString(currentValue / 100)); // 현재 숫자의 1%를 계산
-                    tokens.clear();
+                    double currentValue = Double.parseDouble(currentText);  // 문자열 변환
+                    area.setText(Double.toString(currentValue / 100)); 
                 }
             }
             // =가 눌렸을 때
@@ -104,18 +166,26 @@ public class Calculator extends JFrame {
                 area.setText(area.getText() + e.getActionCommand()); // 클릭한 버튼 추가
             }
         }
-
+        
+        /**
+         *<li>2024.10.12: 계산 메소드 작성</li>
+         * 연산자 계산
+         * -
+         *<li>2024.10.15: 계산 메소드 작성 및 수정</li>
+         *
+         * 우선순위 연산자 오류 --> 수정필요
+         * 
+         * @ ChatGPT : 중위, 후위 표현식으로 변환
+         *     --> 중위에서 후위 변환 === infixToPostfix(tokens)메소드를 통해 후위 표현식으로 변환하라
+         *     --> 후위 표현식 계산 === evaluatePostfix 사용하라.
+         *     
+         */  
         private double calculate(String text) { // 수식 계산하는 메소드
             tokens.clear();
             fullTextParsing(text); // 수식 메소드 호출
             ArrayList<String> postfix = infixToPostfix(tokens); // 중위 표현식을 후위 표현식으로 변환
             return evaluatePostfix(postfix);//후위 표현식
         }
-        
-        /**
-         * @chatgpt: 중위,후위 표현식으로 변환
-         *    -->ArrayList<String> postfix = infixToPostfix(tokens);
-         */
 
 		private void fullTextParsing(String text) { // 수식 메소드
 			StringBuilder numberBuffer = new StringBuilder(); // 숫자버퍼
@@ -144,9 +214,13 @@ public class Calculator extends JFrame {
 			return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/");
 		}
 		
-		/**  @chatgtp: 중위 표현식을 후위 표현식으로 변환하는 메소드
-		         --> private ArrayList<String> infixToPostfix(ArrayList<String> tokens) {...}   */
-        
+        /**
+         * <li>2024.10.19: 중위 표현식을 후위 표현식으로.. </li>
+         *  -----오류
+         * @ ChatGPT : 스택 사용
+         * 
+         *     
+         */ 
 		private ArrayList<String> infixToPostfix(ArrayList<String> tokens) { //중위표현식->후위표현식
 			ArrayList<String> output = new ArrayList<>(); // 후위표현식을 저장할 리스트
 			Stack<String> stack = new Stack<>(); //연산자를 저장할 스택
@@ -199,6 +273,13 @@ public class Calculator extends JFrame {
 
             return stack.pop(); // 최종 결과 반환
         }
+        
+        /**
+         * <li>2024.10.21: 연산 수행 메소드 작성</li>
+         *  연산자를 입력 받아 계산
+         *   ==> 오류 발생 '=' 버튼 클릭 시 값이 나오지 않음
+         *     
+         */  
 
 		private double performOperation(double a, double b, String operator) { // 숫자와 연산자을 입력 받아 수행
 			switch (operator) {
