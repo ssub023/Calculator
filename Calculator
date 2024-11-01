@@ -36,12 +36,13 @@ public class Calculator extends JFrame {
     Calculator() {
         setTitle("계산기");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(350, 370); //프레임 크기 
+        setSize(350, 450); //프레임 크기 
         setLayout(new BorderLayout(5,5));
 
         showNorth();
         showCenter();
 
+        
         setVisible(true); // 프레임을 보이게 함
     }
 
@@ -55,7 +56,7 @@ public class Calculator extends JFrame {
 
     void showCenter() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(5, 4, 10, 10));
+        panel.setLayout(new GridLayout(5, 4, 5, 5));
 
         String[] buttons = {
         	"C", "%", "/", "Back",
@@ -94,13 +95,13 @@ public class Calculator extends JFrame {
         // 연산자 버튼
         else if (label.equals("/") || label.equals("*") || 
                  label.equals("+") || label.equals("-") || label.equals("%")) {
-            button.setBackground(Color.DARK_GRAY); 
+            button.setBackground(Color.GRAY); 
             button.setForeground(Color.WHITE);
             button.setFont(new Font("Arial", Font.BOLD, 20));
         } 
         // = 버튼
         else if (label.equals("=")) {
-            button.setBackground(Color.GRAY); 
+            button.setBackground(Color.DARK_GRAY); 
             button.setForeground(Color.WHITE); 
             button.setFont(new Font("Arial", Font.BOLD, 20));
         }
