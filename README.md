@@ -20,9 +20,9 @@ Java를 사용하여 사칙연산을 수행할 수 있는 계산기를 구현한
 * performOperation: 두 숫자와 연산자를 입력 받아 계산
 
 ## 실행화면
-![계산기1](https://github.com/user-attachments/assets/1476b900-ff30-4126-93fd-d6aeecf2dc79)
-![계산기2](https://github.com/user-attachments/assets/cfeca51b-e8b9-4794-b913-99655e6f7ded)
-![계산기3](https://github.com/user-attachments/assets/a6b5b611-9632-419b-a5ef-c6bdd18f9f46)
+![계산기](https://github.com/user-attachments/assets/79addbb3-be95-452f-87f0-194b26deb060)
+![계산기2](https://github.com/user-attachments/assets/02cf89fe-18c4-4be4-bd37-ffc1b3683dfe)
+![계산기3](https://github.com/user-attachments/assets/90081b0b-a4c8-472f-b689-96adc6bcee35)
 
 ## 보완할 점
 * %기능이 제대로 수행을 하지 못함
@@ -39,7 +39,7 @@ Java를 사용하여 사칙연산을 수행할 수 있는 계산기를 구현한
 * 2024.10.21: 연산 수행 메소드 작성
 * 2024.10.22: 오류 수정
 * 2024.10.25: 폰트 추가
-
+* 2024.11.01: 최종 수정
 
 ## 커밋
 * URL: https://github.com/ssub023/Calculator/commits?author=ssub023
